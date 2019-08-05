@@ -1,19 +1,24 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component } from 'react'
+import { View, StatusBar } from 'react-native'
+import Constants from 'expo-constants'
+import * as Colors from './utils/Colors'
+import Navigator from './Navigator'
 
-export default function App() {
+function AppStatusBar ({backgroundColor, ...props}) {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <View style={{ backgroundColor, height: Constants.statusBarHeight }}>
+      <StatusBar translucent backgroundColor={backgroundColor} {...props} />
     </View>
-  );
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default class App extends Component {
+  render() {
+    return (
+      <View style={{flex: 1}}>
+        <AppStatusBar backgroundColor={Colors.primary} barStyle="light-content" />
+        <Navigator />
+      </View>
+    )
+  }
+}
