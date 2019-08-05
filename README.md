@@ -17,3 +17,4 @@ This project was made using ...
 
 #### Licenses for Use
 
+App Logo: Icon made by [Freepik](https://www.freepik.com/) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
