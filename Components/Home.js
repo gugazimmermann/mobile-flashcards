@@ -1,74 +1,73 @@
-import React, { Component } from 'react'
-import { StyleSheet, Image } from 'react-native'
-import { Spinner, Container, Header, Left, Button, Body, Title, Content, Card, CardItem, H2, Text } from 'native-base'
-import * as Colors from '../utils/Colors'
-import * as API from  '../utils/Api'
+import React, { Component } from "react";
+import { View, ActivityIndicator, FlatList } from "react-native";
+import { withNavigationFocus } from "react-navigation";
+import * as Colors from "../utils/Colors";
+import * as API from "../utils/Api";
+import DeckListItem from "./DeckListItem";
 
 class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isReady: false,
+      decks: [{}]
+    };
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            isReady: false,
-            decks: [{}]
-        }
+  componentDidMount() {
+    this.getDecks();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.isFocused !== this.props.isFocused) {
+      this.getDecks();
     }
+  }
 
-    componentWillMount() {
-        API.getDecks().then(decks => {
-            this.setState({
-                isReady: true,
-                decks: JSON.parse(decks)
-            })
-        })
-    }
+  getDecks = () => {
+    this.setState({ isReady: false });
+    API.getDecks().then(decks => {
+      this.setState({
+        isReady: true,
+        decks: JSON.parse(decks)
+      });
+    });
+  };
 
-    render() {
+  _keyExtractor = (item, index) => item.id;
 
-        const {decks} = this.state
-        const { goBack, navigate } = this.props.navigation
+  _renderItem = ({ item }) => (
+    <DeckListItem
+      id={item.id}
+      onPressItem={this._onPressItem}
+      title={item.title}
+      cards={item.cards.length}
+    />
+  );
 
-        return (
-            <Container>
-                <Header style={{ backgroundColor: Colors.primary }}>
-                    <Left>
-                        <Button transparent>
-                            <Image source={require('../assets/icon-header.png')} />
-                        </Button>
-                    </Left>
-                    <Body>
-                        <Title>Decks</Title>
-                    </Body>
-                </Header>
-                <Content style={{padding: 16}}>
-                    {!this.state.isReady ? (
-                        <Spinner />
-                    ) : (
-                    decks.map((d, i) => 
-                        <Card key={i}>
-                            <CardItem button onPress={() => navigate('Deck', { id: d.id })} style={styles.card}>
-                                <H2 style={styles.marginBottom}>{d.title}</H2>
-                                <Text>{d.cards.length} Cards</Text>
-                            </CardItem>
-                        </Card>
-                    )
-                    )}
-                </Content>
-            </Container>
-        )
-    }
+  _onPressItem = id => {
+    this.props.navigation.navigate("Deck", { id: id });
+  };
+
+  render() {
+    const { decks } = this.state;
+
+    return (
+      <View style={{ flex: 1, padding: 16 }}>
+        {!this.state.isReady ? (
+          <ActivityIndicator size="large" color={Colors.primary} />
+        ) : (
+          <FlatList
+            style={{ flex: 1 }}
+            data={decks}
+            extraData={this.state}
+            keyExtractor={this._keyExtractor}
+            renderItem={this._renderItem}
+          />
+        )}
+      </View>
+    );
+  }
 }
 
-const styles = StyleSheet.create({
-    card: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center'
-    },
-    marginBottom: {
-        paddingBottom: 8
-    }
-})
-
-export default Home
+export default withNavigationFocus(Home);

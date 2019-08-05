@@ -1,8 +1,9 @@
-import {AsyncStorage} from 'react-native'
+import { AsyncStorage } from "react-native";
+import slug from "slug";
 
-export const FIRST_RUN = "MobileFlashcards:first"
-export const DECKS_STORAGE = "MobileFlashcards:decks"
-export const CARDS_STORAGE = "MobileFlashcards:cards"
+export const FIRST_RUN = "MobileFlashcards:first";
+export const DECKS_STORAGE = "MobileFlashcards:decks";
+export const CARDS_STORAGE = "MobileFlashcards:cards";
 
 const mockDecks = [
   {
@@ -70,86 +71,134 @@ const mockCards = [
         "When answering this question, interview coach Pamela Skillings recommends being accurate (share your true strengths, not those you think the interviewer wants to hear); relevant (choose your strengths that are most targeted to this particular position); and specific (for example, instead of “people skills,” choose “persuasive communication” or “relationship building”). Then, follow up with an example of how you've demonstrated these traits in a professional setting."
     }
   }
-]
+];
 
 async function clear() {
   try {
-    await AsyncStorage.clear()
+    await AsyncStorage.clear();
   } catch (e) {
-    alert(e)
+    alert(e);
   }
 }
 
 async function getFirstRun() {
   try {
-    return await AsyncStorage.getItem(FIRST_RUN)
+    return await AsyncStorage.getItem(FIRST_RUN);
   } catch (e) {
-    alert(e)
+    alert(e);
   }
 }
 
 async function setFirstRun() {
   try {
-    return await AsyncStorage.setItem(FIRST_RUN, '1')
+    return await AsyncStorage.setItem(FIRST_RUN, "1");
   } catch (e) {
-    alert(e)
+    alert(e);
   }
 }
 
 async function setMockDecks() {
   try {
-    await AsyncStorage.setItem(DECKS_STORAGE, JSON.stringify(mockDecks))
-    return mockDecks
+    await AsyncStorage.setItem(DECKS_STORAGE, JSON.stringify(mockDecks));
+    return mockDecks;
   } catch (e) {
-    alert(e)
+    alert(e);
   }
 }
 
 async function setMockCards() {
   try {
-    await AsyncStorage.setItem(CARDS_STORAGE, JSON.stringify(mockCards))
-    return mockCards
+    await AsyncStorage.setItem(CARDS_STORAGE, JSON.stringify(mockCards));
+    return mockCards;
   } catch (e) {
-    alert(e)
+    alert(e);
   }
 }
 
 async function getMockDecks() {
   try {
-    let decks = await AsyncStorage.getItem(DECKS_STORAGE)
-    return JSON.parse(decks)
+    let decks = await AsyncStorage.getItem(DECKS_STORAGE);
+    return JSON.parse(decks);
   } catch (e) {
-    alert(e)
+    alert(e);
   }
 }
 
 async function getMockCards() {
   try {
-    let cards = await AsyncStorage.getItem(CARDS_STORAGE)
-    return JSON.parse(cards)
+    let cards = await AsyncStorage.getItem(CARDS_STORAGE);
+    return JSON.parse(cards);
   } catch (e) {
-    alert(e)
+    alert(e);
   }
 }
 
 export async function _getDecks() {
-  let firstRun = await getFirstRun()
+  let firstRun = await getFirstRun();
   if (!firstRun) {
-    console.log(firstRun)
-    await setMockDecks()  
-    await setMockCards()
-    await setFirstRun()
+    await setMockDecks();
+    await setMockCards();
+    await setFirstRun();
   }
-  let decks = await getMockDecks()
-  let cards = await getMockCards()
-  decks.map(d => d.cards = cards.filter(c => c.deck === d.id))
-  return JSON.stringify(decks)
+  let decks = await getMockDecks();
+  let cards = await getMockCards();
+  decks.map(d => (d.cards = cards.filter(c => c.deck === d.id)));
+  return JSON.stringify(decks);
 }
 
 export async function _getDeck(id) {
-  let decks = await getMockDecks()
-  let cards = await getMockCards()
-  let deck = decks.find(d => d.id === id)
-  deck.cards = cards.filter(c => c.deck === deck.id)
-  return JSON.stringify(deck)
+  let decks = await getMockDecks();
+  let cards = await getMockCards();
+  let deck = decks.find(d => d.id === id);
+  deck.cards = cards.filter(c => c.deck === deck.id);
+  return JSON.stringify(deck);
+}
+
+async function addCards(cards) {
+  try {
+    await AsyncStorage.setItem(CARDS_STORAGE, JSON.stringify(cards));
+    return true;
+  } catch (e) {
+    alert(e);
+  }
+}
+
+async function addDecks(decks) {
+  try {
+    await AsyncStorage.setItem(DECKS_STORAGE, JSON.stringify(decks));
+    return true;
+  } catch (e) {
+    alert(e);
+  }
+}
+
+export async function _addCardToDeck(id, card) {
+  let cards = await getMockCards();
+  let newCard = {
+    deck: id,
+    id: slug(card.question),
+    card: {
+      question: card.question,
+      answer: card.answer
+    }
+  };
+  cards.push(newCard);
+  return await addCards(cards);
+}
+
+export async function _saveDeckTitle(deck) {
+  let decks = await getMockDecks();
+  let newDeck = {
+    id: slug(deck),
+    title: deck
+  };
+  decks.push(newDeck);
+  await addDecks(decks);
+  return newDeck.id;
+}
+
+export async function _deleteDeck(deck) {
+  let decks = await getMockDecks();
+  let newDecks = decks.filter(d => d.id !== deck.id);
+  return await addDecks(newDecks);
 }

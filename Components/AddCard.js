@@ -11,26 +11,42 @@ import {
 import * as Colors from "../utils/Colors";
 import * as API from "../utils/Api";
 
-class AddDeck extends Component {
+class AddCard extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isReady: false,
-      deck: ""
+      id: this.props.navigation.state.params.id,
+      deck: {},
+      question: "",
+      answer: ""
     };
   }
 
-  save = deck => {
-    API.saveDeckTitle(deck).then(id => {
-      this.props.navigation.navigate("Deck", { id: id });
+  componentWillMount() {
+    API.getDeck(this.state.id).then(d => {
+      let deck = JSON.parse(d);
+      this.setState({
+        isReady: true,
+        deck: deck
+      });
+      this.props.navigation.setParams({ title: deck.title });
+    });
+  }
+
+  save = (question, answer) => {
+    API.addCardToDeck(this.state.deck.id, { question, answer }).then(res => {
+      if (res === true) this.props.navigation.navigate("Decks");
     });
   };
 
   render() {
-    return (
+    return !this.state.isReady ? (
+      <ActivityIndicator size="large" color={Colors.primary} />
+    ) : (
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1, padding: 16 }}>
         <View style={styles.deck}>
-          <Text style={styles.title}>Choose the name of the New Deck</Text>
+          <Text style={styles.title}>Add New Card</Text>
         </View>
         <View
           style={{ flex: 1, flexDirection: "column", alignItems: "center" }}
@@ -38,18 +54,37 @@ class AddDeck extends Component {
           <TextInput
             style={styles.input}
             underlineColorAndroid="transparent"
-            placeholder="Deck Name"
+            placeholder="Question"
             placeholderTextColor={Colors.primary}
             autoCapitalize="none"
-            value={this.state.deck}
-            onChangeText={deck => this.setState({ deck: deck })}
+            value={this.state.question}
+            onChangeText={question => this.setState({ question: question })}
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              this.answerTextInput.focus();
+            }}
+          />
+
+          <TextInput
+            style={styles.input}
+            underlineColorAndroid="transparent"
+            placeholder="Answer"
+            placeholderTextColor={Colors.primary}
+            autoCapitalize="none"
+            value={this.state.answer}
+            onChangeText={answer => this.setState({ answer: answer })}
             returnKeyType="done"
-            onSubmitEditing={() => this.save(this.state.deck)}
+            ref={input => {
+              this.answerTextInput = input;
+            }}
+            onSubmitEditing={() =>
+              this.save(this.state.question, this.state.answer)
+            }
           />
 
           <TouchableOpacity
             style={[styles.buttonStyle, styles.warning]}
-            onPress={() => this.save(this.state.deck)}
+            onPress={() => this.save(this.state.question, this.state.answer)}
           >
             <Text style={styles.buttonText}> Submit </Text>
           </TouchableOpacity>
@@ -102,4 +137,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AddDeck;
+export default AddCard;
