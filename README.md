@@ -1,12 +1,13 @@
 # Mobile Flashcards Project
 
-This is the third  project for the Udacity React Nanodegree. 
+This is the third project for the Udacity React Nanodegree. 
 
-This application is a ...
+This application is a app where the user can create deck and put card on it. Each card hava a question and a answer. The user can select a deck and start a quiz to answer the questions and use as a tool to study.
 
 ### Technologies Used
 
-This project was made using ...
+This project was made using React Native and Expo.
+_It has been tested on Android._
 
 ### How To Install
 
