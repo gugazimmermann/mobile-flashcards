@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import { AppLoading } from "expo";
 import * as Font from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
-import Constants from "expo-constants";
 import { View, StatusBar } from "react-native";
+import Constants from "expo-constants";
 import * as Colors from "./utils/Colors";
 import Navigator from "./Navigator";
+import {setLocalNotification} from './utils/Notifications'
+
 
 function AppStatusBar({ backgroundColor, ...props }) {
   return (
@@ -19,7 +21,8 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isReady: false
+      isReady: false,
+      notification: {}
     };
   }
 
@@ -29,6 +32,7 @@ export default class App extends Component {
       Roboto_medium: require("./assets/Roboto_medium.ttf"),
       ...Ionicons.font
     });
+    await setLocalNotification();
     this.setState({ isReady: true });
   }
 

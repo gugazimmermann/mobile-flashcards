@@ -69,7 +69,7 @@ class DeckDetail extends Component {
             <View style={styles.buttons}>
               <TouchableOpacity
                 style={[styles.buttonStyle, styles.success]}
-                onPress={() => navigate("AddCard", { id: deck.id })}
+                onPress={() => navigate("Quiz", { id: deck.id })}
               >
                 <Text style={styles.buttonText}>Start Quiz</Text>
               </TouchableOpacity>

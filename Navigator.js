@@ -12,6 +12,7 @@ import Home from "./components/Home";
 import AddDeck from "./components/AddDeck";
 import DeckDetail from "./components/DeckDetail";
 import AddCard from "./components/AddCard";
+import Quiz from "./components/Quiz";
 
 const Tab = createBottomTabNavigator(
   {
@@ -80,6 +81,14 @@ const Stack = createStackNavigator(
       navigationOptions: ({ navigation }) => ({
         id: navigation.state.params.id,
         title: navigation.state.params.title
+      })
+    },
+    Quiz: {
+      screen: Quiz,
+      path: "quiz/:id",
+      navigationOptions: ({ navigation }) => ({
+        id: navigation.state.params.id,
+        title: `Quiz: ${navigation.state.params.title}`
       })
     }
   },
