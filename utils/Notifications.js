@@ -24,19 +24,24 @@ const registerForLocalNotificationsAsync = async () => {
 const sendLocalNotification = async () => {
   Notifications.cancelAllScheduledNotificationsAsync();
 
-  const quizDates = await getQuizDate()
-  let date = new Date()
-  const today = date.getUTCDate() + '/' + (date.getUTCMonth() + 1) + '/' + date.getUTCFullYear()
+  const quizDates = await getQuizDate();
+  let date = new Date();
+  const today =
+    date.getUTCDate() +
+    "/" +
+    (date.getUTCMonth() + 1) +
+    "/" +
+    date.getUTCFullYear();
 
-  const findDate = quizDates.findIndex(d => d === today)
-  let scheduleDate = new Date()
+  const findDate = quizDates.findIndex(d => d === today);
+  let scheduleDate = new Date();
   if (findDate !== -1) {
-    scheduleDate.setDate(scheduleDate.getDate() + 1)
+    scheduleDate.setDate(scheduleDate.getDate() + 1);
   }
-  scheduleDate.setHours(20)
-  scheduleDate.setMinutes(0)
-  scheduleDate.setSeconds(0)
-  
+  scheduleDate.setHours(20);
+  scheduleDate.setMinutes(0);
+  scheduleDate.setSeconds(0);
+
   Notifications.scheduleLocalNotificationAsync(
     {
       title: "Answer a Quiz!",
@@ -59,30 +64,30 @@ const sendLocalNotification = async () => {
 };
 
 const handleNotification = () => {
-    console.log('Notification received');
-}
+  console.log("Notification received");
+};
 
 export const setLocalNotification = async () => {
   const register = await registerForLocalNotificationsAsync();
   if (register) {
     sendLocalNotification();
-    Notifications.addListener(handleNotification)
+    Notifications.addListener(handleNotification);
   }
 };
 
 const getQuizDate = async () => {
-  let quizDates = await AsyncStorage.getItem(QUIZ_KEY); 
-  return (quizDates) ? JSON.parse(quizDates) : []
-}
+  let quizDates = await AsyncStorage.getItem(QUIZ_KEY);
+  return quizDates ? JSON.parse(quizDates) : [];
+};
 
 export async function setQuizDate(today) {
-  let quizDates = await getQuizDate()
-  quizDates.push(today)
-  const uniqSet = new Set(quizDates)
-  const dates = [...uniqSet]
+  let quizDates = await getQuizDate();
+  quizDates.push(today);
+  const uniqSet = new Set(quizDates);
+  const dates = [...uniqSet];
   try {
     await AsyncStorage.setItem(QUIZ_KEY, JSON.stringify(dates));
-    sendLocalNotification()
+    sendLocalNotification();
     return true;
   } catch (e) {
     alert(e);

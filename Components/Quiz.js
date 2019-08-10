@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import * as Colors from "../utils/Colors";
 import * as API from "../utils/Api";
-import {setQuizDate} from "../utils/Notifications";
+import { setQuizDate } from "../utils/Notifications";
 
 class Quiz extends Component {
   constructor(props) {
@@ -138,9 +138,14 @@ class Quiz extends Component {
     const { navigate } = this.props.navigation;
     const correct = deck.cards.filter(c => c.correct === true);
 
-    const date = new Date()
-    const today = date.getUTCDate() + '/' + (date.getUTCMonth() + 1) + '/' + date.getUTCFullYear()
-    setQuizDate(today)
+    const date = new Date();
+    const today =
+      date.getUTCDate() +
+      "/" +
+      (date.getUTCMonth() + 1) +
+      "/" +
+      date.getUTCFullYear();
+    setQuizDate(today);
 
     return (
       <View style={{ flex: 1 }}>
@@ -161,7 +166,7 @@ class Quiz extends Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.buttonStyle, styles.warning]}
-            onPress={() =>  navigate("Deck", { id: this.state.id })}
+            onPress={() => navigate("Deck", { id: this.state.id })}
           >
             <Text style={styles.buttonText}>Back to Deck</Text>
           </TouchableOpacity>

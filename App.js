@@ -6,8 +6,7 @@ import { View, StatusBar } from "react-native";
 import Constants from "expo-constants";
 import * as Colors from "./utils/Colors";
 import Navigator from "./Navigator";
-import {setLocalNotification} from './utils/Notifications'
-
+import { setLocalNotification } from "./utils/Notifications";
 
 function AppStatusBar({ backgroundColor, ...props }) {
   return (
